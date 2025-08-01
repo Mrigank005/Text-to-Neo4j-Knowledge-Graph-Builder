@@ -2,7 +2,7 @@
 
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue)
 ![Neo4j](https://img.shields.io/badge/Neo4j-4.4%2B-green)
-![Ollama](https://img.shields.io/badge/Ollama-3.2:1B-orange)
+![Ollama](https://img.shields.io/badge/Ollama-3.1:8B-orange)
 ![LangChain](https://img.shields.io/badge/LangChain-Latest-red)
 
 A Python script that extracts entities and relationships from text files using Ollama's LLM and builds a knowledge graph in Neo4j.
@@ -10,7 +10,7 @@ A Python script that extracts entities and relationships from text files using O
 ## Features
 
 - 📄 Processes multiple `.txt` files from an `Input` folder
-- 🧠 Uses Ollama's LLM (llama3.2:1b by default) for intelligent entity and relationship extraction
+- 🧠 Uses Ollama's LLM (llama3.1:8B by default) for intelligent entity and relationship extraction
 - 🗃️ Stores extracted knowledge as nodes and relationships in Neo4j
 - 🔄 Handles large documents with smart text chunking using LangChain
 - 🏷️ Automatic node labeling with sanitized types and relationship typing
@@ -38,7 +38,7 @@ Text-to-Neo4j-Knowledge-Graph-Builder/
 - **Python 3.8+**
 - **[Neo4j Desktop](https://neo4j.com/download/) or Neo4j Community Server** running locally on port 7687
 - **[Ollama](https://ollama.ai/)** running locally on port 11434
-- **llama3.2:1b model** (or your preferred model) downloaded in Ollama
+- **llama3.1:8B model** (or your preferred model) downloaded in Ollama
 
 ### Required Python Packages
 ```bash
@@ -126,7 +126,7 @@ RETURN n, r, connected
 | `NEO4J_URI` | Neo4j connection URI | `bolt://localhost:7687` |
 | `NEO4J_USER` | Neo4j username | `neo4j` |
 | `NEO4J_PASSWORD` | Neo4j password | `password` |
-| `OLLAMA_MODEL` | Ollama model name | `llama3.2:1b` |
+| `OLLAMA_MODEL` | Ollama model name | `llama3.1:8B` |
 | `OLLAMA_BASE_URL` | Ollama service URL | `http://localhost:11434` |
 | `chunk_size` | Text chunk size for processing | `512` |
 | `chunk_overlap` | Overlap between text chunks | `50` |
