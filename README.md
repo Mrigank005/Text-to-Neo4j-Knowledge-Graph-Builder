@@ -152,6 +152,3 @@ RETURN n, r, connected
 ## License
 
 MIT License - Feel free to use and modify as needed.
-5. Maintained all existing useful information while making it more comprehensive
-6. Added proper credit to the repository owner (Mrigank005)
-7. Improved organization with clearer section headings
