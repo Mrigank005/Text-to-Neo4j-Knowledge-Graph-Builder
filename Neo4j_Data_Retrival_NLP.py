@@ -204,132 +204,107 @@ def main_menu(explorer: Neo4jExplorer):
         6. Natural Language Search
         0. Exit
         """)
-        
-        choice = input("Enter your choice (0-6): ").strip()
-        
-        if choice == "0":
-            break
-            
-        elif choice == "1":
-            clear_screen()
-            print("\n📊 Graph Summary")
-            stats = explorer.get_graph_summary()
-            print(f"\nTotal Nodes: {stats['node_count']}")
-            print(f"Total Relationships: {stats['rel_count']}")
-            
-            print("\n🏷️ Node Labels (Count):")
-            for label in stats["labels"]:
-                print(f"- {label['label']}: {label['count']}")
-            
-            print("\n🔗 Relationship Types (Count):")
-            for rel in stats["relationships"]:
-                print(f"- {rel['type']}: {rel['count']}")
-            
-            input("\nPress Enter to continue...")
-            
-        elif choice == "2":
-            clear_screen()
-            print("\nSearch options:")
-            print("1. Exact ID search")
-            print("2. Natural language search")
-            search_choice = input("Choose search type (1-2): ").strip()
-            
-            if search_choice == "1":
-                search_term = input("\nEnter search term: ").strip()
-                if not search_term:
-                    continue
-                    
-                results = explorer.search_nodes(search_term)
-                display_search_results(results)
-                
-            elif search_choice == "2":
-                query = input("\nEnter your natural language query: ").strip()
-                if not query:
-                    continue
-                    
-                print(f"\nExtracted search terms: {explorer.extract_search_terms(query)}")
-                results = explorer.semantic_search_nodes(query)
-                display_search_results(results)
-            else:
-                input("\nInvalid choice. Press Enter to continue...")
-                continue
-            
-            input("\nPress Enter to continue...")
-            
-        elif choice == "3":
-            clear_screen()
-            node_id = input("\nEnter node ID: ").strip()
-            if not node_id:
-                continue
-                
-            node = explorer.get_node(node_id)
-            if not node:
-                print(f"\nNode '{node_id}' not found.")
-            else:
-                display_node(node)
-                rels = explorer.get_node_relationships(node_id)
-                display_relationships(rels)
-            
-            input("\nPress Enter to continue...")
-            
-        elif choice == "4":
-            clear_screen()
-            source_id = input("\nEnter source node ID: ").strip()
-            target_id = input("Enter target node ID: ").strip()
-            if not source_id or not target_id:
-                continue
-                
-            paths = explorer.find_paths(source_id, target_id)
-            if not paths:
-                print(f"\nNo path found between {source_id} and {target_id}")
-            else:
-                for path in paths:
-                    display_path(path)
-            
-            input("\nPress Enter to continue...")
-            
-        elif choice == "5":
-            clear_screen()
-            duplicates = explorer.get_duplicate_relationships()
-            if not duplicates:
-                print("\nNo duplicate relationships found.")
-            else:
-                print("\n⚠️ Potential Duplicate Relationships:")
-                for dup in duplicates:
-                    print(f"\n{dup['source']} --[{dup['type']}]--> {dup['target']}")
-                    print(f"Count: {dup['count']}")
-            
-            input("\nPress Enter to continue...")
-            
-        elif choice == "6":
-            clear_screen()
-            query = input("\nEnter your natural language query: ").strip()
-            if not query:
-                continue
-                
-            print(f"\nExtracted search terms: {explorer.extract_search_terms(query)}")
-            results = explorer.semantic_search_nodes(query)
-            display_search_results(results)
-            
-            input("\nPress Enter to continue...")
-            
-        else:
-            print("\nInvalid choice. Please try again.")
-            input("Press Enter to continue...")
 
-if __name__ == "__main__":
-    # Configuration - Update these with your Neo4j credentials
-    NEO4J_URI = "bolt://localhost:7687"
-    NEO4J_USER = "neo4j"
-    NEO4J_PASSWORD = "password"  # Replace with your actual password
-    
-    try:
-        explorer = Neo4jExplorer(NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD)
-        print("✅ Successfully connected to Neo4j")
-        main_menu(explorer)
-    except Exception as e:
-        print(f"❌ Error: {e}")
-    finally:
-        if 'explorer' in locals():
-            explorer.close()
-        print("\nGoodbye!")
+        choice = input("Enter your choice (0-6): ").strip()
+
+        match choice:
+            case "0":
+                break
+
+            case "1":
+                clear_screen()
+                print("\n📊 Graph Summary")
+                stats = explorer.get_graph_summary()
+                print(f"\nTotal Nodes: {stats['node_count']}")
+                print(f"Total Relationships: {stats['rel_count']}")
+                
+                print("\n🏷️ Node Labels (Count):")
+                for label in stats["labels"]:
+                    print(f"- {label['label']}: {label['count']}")
+                
+                print("\n🔗 Relationship Types (Count):")
+                for rel in stats["relationships"]:
+                    print(f"- {rel['type']}: {rel['count']}")
+                
+                input("\nPress Enter to continue...")
+
+            case "2":
+                clear_screen()
+                print("\nSearch options:")
+                print("1. Exact ID search")
+                print("2. Natural language search")
+                search_choice = input("Choose search type (1-2): ").strip()
+
+                match search_choice:
+                    case "1":
+                        search_term = input("\nEnter search term: ").strip()
+                        if search_term:
+                            results = explorer.search_nodes(search_term)
+                            display_search_results(results)
+
+                    case "2":
+                        query = input("\nEnter your natural language query: ").strip()
+                        if query:
+                            print(f"\nExtracted search terms: {explorer.extract_search_terms(query)}")
+                            results = explorer.semantic_search_nodes(query)
+                            display_search_results(results)
+
+                    case _:
+                        input("\nInvalid choice. Press Enter to continue...")
+
+                input("\nPress Enter to continue...")
+
+            case "3":
+                clear_screen()
+                node_id = input("\nEnter node ID: ").strip()
+                if node_id:
+                    node = explorer.get_node(node_id)
+                    if not node:
+                        print(f"\nNode '{node_id}' not found.")
+                    else:
+                        display_node(node)
+                        rels = explorer.get_node_relationships(node_id)
+                        display_relationships(rels)
+
+                input("\nPress Enter to continue...")
+
+            case "4":
+                clear_screen()
+                source_id = input("\nEnter source node ID: ").strip()
+                target_id = input("Enter target node ID: ").strip()
+                if source_id and target_id:
+                    paths = explorer.find_paths(source_id, target_id)
+                    if not paths:
+                        print(f"\nNo path found between {source_id} and {target_id}")
+                    else:
+                        for path in paths:
+                            display_path(path)
+
+                input("\nPress Enter to continue...")
+
+            case "5":
+                clear_screen()
+                duplicates = explorer.get_duplicate_relationships()
+                if not duplicates:
+                    print("\nNo duplicate relationships found.")
+                else:
+                    print("\n⚠️ Potential Duplicate Relationships:")
+                    for dup in duplicates:
+                        print(f"\n{dup['source']} --[{dup['type']}]--> {dup['target']}")
+                        print(f"Count: {dup['count']}")
+
+                input("\nPress Enter to continue...")
+
+            case "6":
+                clear_screen()
+                query = input("\nEnter your natural language query: ").strip()
+                if query:
+                    print(f"\nExtracted search terms: {explorer.extract_search_terms(query)}")
+                    results = explorer.semantic_search_nodes(query)
+                    display_search_results(results)
+
+                input("\nPress Enter to continue...")
+
+            case _:
+                print("\nInvalid choice. Please try again.")
+                input("Press Enter to continue...")
