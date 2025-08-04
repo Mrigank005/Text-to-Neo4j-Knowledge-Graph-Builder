@@ -4,151 +4,166 @@
 ![Neo4j](https://img.shields.io/badge/Neo4j-4.4%2B-green)
 ![Ollama](https://img.shields.io/badge/Ollama-3.1:8B-orange)
 ![LangChain](https://img.shields.io/badge/LangChain-Latest-red)
+![spaCy](https://img.shields.io/badge/spaCy-3.7+-blue)
 
-A Python script that extracts entities and relationships from text files using Ollama's LLM and builds a knowledge graph in Neo4j.
+A comprehensive Python solution that transforms unstructured text into a queryable knowledge graph using Ollama's LLM and Neo4j, with an interactive exploration interface.
 
 ## Features
 
-- 📄 Processes multiple `.txt` files from an `Input` folder
-- 🧠 Uses Ollama's LLM (llama3.1:8B by default) for intelligent entity and relationship extraction
-- 🗃️ Stores extracted knowledge as nodes and relationships in Neo4j
-- 🔄 Handles large documents with smart text chunking using LangChain
-- 🏷️ Automatic node labeling with sanitized types and relationship typing
-- 🔗 Structured output using Pydantic models for reliable data extraction
-- 🔍 Includes Neo4j data explorer with NLP capabilities (in `Neo4j_Data_Retrival_NLP.py`)
+- 📄 Batch processes multiple `.txt` files from an `Input` folder
+- 🧠 Leverages Ollama's LLM (default: llama3.1:8B) for intelligent knowledge extraction
+- 🗃️ Automated Neo4j graph construction with MERGE operations
+- 🔄 Intelligent text chunking (512 chars with 50 overlap) via LangChain
+- 🏷️ Automatic type normalization (e.g., "Chief Officer" → "ChiefOfficer")
+- 🔗 Relationship standardization (UPPER_SNAKE_CASE)
+- 🔍 Built-in NLP explorer with semantic search capabilities
+- 📊 Interactive graph visualization and statistics
 
 ## Project Structure
 
 ```
 Text-to-Neo4j-Knowledge-Graph-Builder/
-├── Text_to_Neo4J.py          # Main data entry script
-├── Neo4j_Data_Retrival_NLP.py # Interactive graph explorer with NLP
-├── Input/                    # Place your .txt files here
-│   ├── document1.txt
-│   ├── document2.txt
-│   └── ...
-├── requirements.txt          # Python dependencies
-├── LICENSE
-└── README.md
+├── Text_to_Neo4J.py               # Main ETL pipeline
+├── Neo4j_Data_Retrival_NLP.py      # Interactive explorer
+├── Input/                          # Source text files
+│   ├── sample1.txt
+│   └── sample2.txt
+├── requirements.txt                # Dependency spec
+├── LICENSE                         # MIT License
+└── README.md                       # This document
 ```
 
 ## Prerequisites
 
-### Required Software
-- **Python 3.8+**
-- **[Neo4j Desktop](https://neo4j.com/download/) or Neo4j Community Server** running locally on port 7687
-- **[Ollama](https://ollama.ai/)** running locally on port 11434
-- **llama3.1:8B model** (or your preferred model) downloaded in Ollama
-
-### Required Python Packages
-```bash
-pip install -r requirements.txt
-```
+| Component       | Version       | Installation Guide                 |
+|-----------------|---------------|------------------------------------|
+| Python          | 3.8+          | [python.org](https://www.python.org/downloads/) |
+| Neo4j           | 4.4+          | [neo4j.com/download](https://neo4j.com/download/) |
+| Ollama          | Latest        | [ollama.ai](https://ollama.ai/)    |
+| llama3.1:8B     | -             | `ollama pull llama3.1:8B`          |
 
 ## Installation
 
-1. **Clone or download the project:**
+1. **Clone repository**:
    ```bash
    git clone https://github.com/Mrigank005/Text-to-Neo4j-Knowledge-Graph-Builder.git
    cd Text-to-Neo4j-Knowledge-Graph-Builder
    ```
 
-2. **Install Python dependencies:**
+2. **Set up environment**:
    ```bash
    pip install -r requirements.txt
    python -m spacy download en_core_web_sm
    ```
 
-3. **Set up Neo4j:**
-   - Start your Neo4j database
-   - Note your password (default user is `neo4j`)
+3. **Configure Neo4j**:
+   - Start Neo4j Desktop/Server
+   - Set password in both scripts:
+     ```python
+     NEO4J_PASSWORD = "your_neo4j_password"  # In both .py files
+     ```
 
-4. **Set up Ollama:**
+4. **Prepare Ollama**:
    ```bash
-   # Install and pull the model
-   ollama pull llama3.2:1b
+   ollama serve &  # Run in background
+   ollama pull llama3.1:8B
    ```
 
-5. **Configure the scripts:**
-   Edit the configuration variables in both scripts:
-   ```python
-   NEO4J_PASSWORD = "your_actual_password_here"  # Replace with your Neo4j password
-   OLLAMA_MODEL = "llama3.2:1b"  # Or your preferred model
-   ```
+## Workflow Overview
 
-6. **Create the Input folder:**
-   ```bash
-   mkdir Input
-   ```
+```mermaid
+flowchart LR
+    A[Input Texts] --> B(Text Chunking)
+    B --> C{LLM Processing}
+    C --> D[Entities]
+    C --> E[Relationships]
+    D --> F[(Neo4j Graph)]
+    E --> F
+    F --> G[[Explorer UI]]
+    
+    subgraph Extraction
+    B -->|LangChain| C
+    C -->|llama3.1:8B| D
+    C -->|llama3.1:8B| E
+    end
+    
+    subgraph Storage
+    D -->|MERGE| F
+    E -->|CREATE| F
+    end
+    
+    subgraph Visualization
+    F -->|Query| G
+    end
+```
 
 ## Usage
 
-### 1. Data Entry (Text_to_Neo4J.py)
-1. **Place your text files** in the `Input` folder
-2. **Run the script:**
-   ```bash
-   python Text_to_Neo4J.py
-   ```
+### 1. Data Ingestion
+```bash
+python Text_to_Neo4J.py
+```
+- Processes all `.txt` files in `Input/`
+- Shows real-time progress for each chunk
+- Outputs summary statistics
 
-### 2. Graph Exploration (Neo4j_Data_Retrival_NLP.py)
+### 2. Graph Exploration
 ```bash
 python Neo4j_Data_Retrival_NLP.py
 ```
+**Menu Options**:
+1. 📊 Graph summary statistics
+2. 🔍 Node search (exact/NLP)
+3. 🕵️ Node detail inspection
+4. 🛣️ Pathfinding between nodes
+5. 🔄 Duplicate relationship check
+6. 🧠 Semantic search
 
-Features:
-- 🌐 Interactive graph statistics
-- 🔍 Node search by ID or natural language
-- 🛣️ Path finding between nodes
-- 🔗 Relationship visualization
-- 🧠 NLP-powered semantic search
+## Example Use Case
 
-## Example Queries
-
-```cypher
-// View all nodes and relationships
-MATCH (n)-[r]->(m) RETURN n, r, m LIMIT 50
-
-// View all entities
-MATCH (n:Entity) RETURN n LIMIT 25
-
-// Find specific entity types
-MATCH (n:Person) RETURN n.name
-
-// Explore relationships of a specific entity
-MATCH (n {id: "EntityName"})-[r]-(connected) 
-RETURN n, r, connected
+**Input Text**:
+```
+Apple Inc. was founded by Steve Jobs in 1976. The company develops consumer electronics like the iPhone.
 ```
 
-## Configuration Options
+**Resulting Graph**:
+```cypher
+(:Company {id: "Apple Inc.", name: "Apple Inc."})-[:FOUNDED_BY]->(:Person {id: "Steve Jobs"})
+(:Company {id: "Apple Inc."})-[:DEVELOPS]->(:Product {id: "iPhone"})
+```
 
-| Parameter | Description | Default Value |
-|-----------|-------------|---------------|
-| `NEO4J_URI` | Neo4j connection URI | `bolt://localhost:7687` |
-| `NEO4J_USER` | Neo4j username | `neo4j` |
-| `NEO4J_PASSWORD` | Neo4j password | `password` |
-| `OLLAMA_MODEL` | Ollama model name | `llama3.1:8B` |
-| `OLLAMA_BASE_URL` | Ollama service URL | `http://localhost:11434` |
-| `chunk_size` | Text chunk size for processing | `512` |
-| `chunk_overlap` | Overlap between text chunks | `50` |
+## Configuration Reference
 
-## Troubleshooting
+| Parameter           | Default Value               | Description                          |
+|---------------------|-----------------------------|--------------------------------------|
+| `NEO4J_URI`         | `bolt://localhost:7687`     | Neo4j connection endpoint            |
+| `OLLAMA_MODEL`      | `"llama3.1:8B"`            | LLM model for extraction             |
+| `chunk_size`        | `512`                       | Character count per text segment     |
+| `chunk_overlap`     | `50`                        | Overlap between segments             |
 
-### Common Issues
+## Troubleshooting Guide
 
-- **❌ Failed to connect to Neo4j**: 
-  - Verify Neo4j is running on port 7687
-  - Check your username/password in the script
-  - Ensure bolt connector is enabled
+| Issue                          | Solution Steps                     |
+|--------------------------------|------------------------------------|
+| Neo4j connection failed        | 1. Verify service is running<br>2. Check bolt:// URL<br>3. Confirm credentials |
+| No files processed             | 1. Ensure `Input/` directory exists<br>2. Verify .txt extension |
+| LLM timeout errors             | 1. Check `ollama serve` status<br>2. Reduce chunk_size<br>3. Try simpler model |
+| Duplicate nodes/relationships  | 1. Pre-clear graph if needed<br>2. Check MERGE logic |
 
-- **❌ No .txt files found**: 
-  - Make sure you have an `Input` folder in the same directory as the script
-  - Verify your files have `.txt` extension
+## Performance Tips
 
-- **❌ Error invoking Ollama**: 
-  - Ensure Ollama is running: `ollama serve`
-  - Check if your model is available: `ollama list`
-  - Try pulling the model again: `ollama pull llama3.2:1b`
+- For large datasets:
+  - Increase chunk_size to 768-1024
+  - Use `ollama pull llama3:70B` for complex texts
+  - Process files sequentially with pauses
+
+- For better accuracy:
+  - Pre-process texts to remove noise
+  - Add domain-specific examples in prompts
+  - Use smaller chunk_overlap (20-30)
 
 ## License
 
-MIT License - Feel free to use and modify as needed.
+MIT License - See [LICENSE](LICENSE) for full text.
+
+---
